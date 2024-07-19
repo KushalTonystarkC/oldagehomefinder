@@ -31,3 +31,42 @@ body {
     text-wrap: balance;
   }
 }
+.form-control-underline {
+  border: none !important;
+  border-bottom: 2px solid #007bff !important; /* Customize the underline color */
+  border-radius: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  box-shadow: none !important;
+}
+
+.form-control-underline:focus {
+  border-bottom-color: #0056b3 !important; /* Customize the focus underline color */
+  outline: none !important; /* Remove the default focus outline */
+  box-shadow: none !important;
+}
+
+/* Hide spinners in Chrome, Safari, Edge, and Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide spinners in Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+.map-parent-container {
+  height: 400px; /* Ensure the parent container has a defined height */
+}
+
+.map-container {
+  height: 100%;
+  width: 400px;
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+}
