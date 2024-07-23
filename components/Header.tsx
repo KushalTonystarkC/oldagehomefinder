@@ -9,10 +9,10 @@ const Header = () => {
           <Navbar bg="primary" variant="dark">
             <Container>
               <Navbar.Brand href="#home">Company Name</Navbar.Brand>
-              <Nav className="mx-auto">
-                <Nav.Link href="#home">Home</Nav.Link>
-                <Nav.Link href="#features">Features</Nav.Link>
-                <Nav.Link href="#pricing">Pricing</Nav.Link>
+              <Nav className="mx-auto" defaultActiveKey={"/"}>
+                <Nav.Link href="/">Home</Nav.Link>
+                <Nav.Link href="/about">About Us</Nav.Link>
+                <Nav.Link href="/contact">Contact Us</Nav.Link>
               </Nav>
             </Container>
           </Navbar>
