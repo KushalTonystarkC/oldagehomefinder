@@ -34,7 +34,7 @@ const CenterInfoCard = () => {
                                     <Row className="g-2">
                                         <Col sm={6} lg={6} xs={6} md={6} xl={6} xxl={6}>
                                             <Card>
-                                                <div className="flex flex-column justify-center align-center">
+                                                <div className="flex flex-col justify-center align-center">
                                                     <div className="text-center ma-0">Female Beds</div>
                                                     <div className="text-center ma-0">3</div>
                                                 </div>
@@ -70,12 +70,14 @@ const CenterInfoCard = () => {
                         </Col>
                     </Row>
                 </Container>
+                <div className="flex flex-col gap-2 m-2">
                 <Col sm={12} lg={12} xs={12} md={12} xl={12} xxl={12} class="my-2">
                     <Button variant="outline-primary" style={{ width: '100%' }}>Go somewhere</Button>
                 </Col>
                 <Col sm={12} lg={12} xs={12} md={12} xl={12} xxl={12} class="my-2">
                     <Button variant="outline-primary" style={{ width: '100%' }}>Go somewhere</Button>
                 </Col>
+                </div>
             </Card.Body>
         </Card>
     </Col>

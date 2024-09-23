@@ -143,8 +143,8 @@ const SearchMain: React.FC = () => {
 
   return (
     <>
-      <Container className="my-4">
-        <Row>
+      <Container className="my-4" fluid>
+        <Row className="flex justify-between items-start px-4">
           <Col lg={5} className="search-container">
             <Image src="https://bestfitnetwork.com/wp-content/uploads/2023/12/cropped-Bestfit-Network-Logo.webp" width={200} height={50} />
             <p>Your Interconnected Portal to Healthcare Communities</p>
