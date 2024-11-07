@@ -101,6 +101,7 @@ const SearchMain: React.FC = () => {
   const [filteredData, setFilteredData] = useState<City[]>(data.cities);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const [suggestions, setSuggestions] = useState<{ cityName: string; areaName: string }[]>([]);
+  const [selectedCoordinates, setSelectedCoordinates] = useState<Coordinates | null>(null);
 
   useEffect(() => {
     if (searchTerm === "") {
@@ -136,9 +137,24 @@ const SearchMain: React.FC = () => {
     }
   }, [searchTerm]);
 
-  const handleSelectSuggestion = (cityName: string, areaName: string) => {
-    setSearchTerm(`${areaName}, ${cityName}`);
-    setShowDropdown(false);
+  
+const handleSelectSuggestion = (cityName: string, areaName: string) => {
+  setSearchTerm(`${areaName}, ${cityName}`);
+
+  // Find the selected city's coordinates
+  const selectedCity = data.cities.find(city => city.name === cityName);
+  const selectedArea = selectedCity?.areas.find(area => area.name === areaName);
+
+  if (selectedArea) {
+    setSelectedCoordinates(selectedArea.coordinates); // Set coordinates for focusing
+  }
+
+  setSuggestions([]); // Clear suggestions
+  setShowDropdown(false); // Close the dropdown
+};
+  
+  const handleBlur = () => {
+    setTimeout(() => setShowDropdown(false), 150); // Small delay to allow dropdown selection
   };
 
   return (
@@ -150,15 +166,15 @@ const SearchMain: React.FC = () => {
             <p>Your Interconnected Portal to Healthcare Communities</p>
             <h1>Search The Best Senior Care Community</h1>
             <InputGroup className="my-2">
-              <Form.Control
-                placeholder="Enter your zip code, city or location"
-                aria-label="Enter your zip code, city or location"
-                aria-describedby="basic-addon2"
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                onFocus={() => setShowDropdown(suggestions.length > 0)}
-                onBlur={() => setTimeout(() => setShowDropdown(false), 100)}
-              />
+            <Form.Control
+  placeholder="Enter your zip code, city or location"
+  aria-label="Enter your zip code, city or location"
+  aria-describedby="basic-addon2"
+  value={searchTerm}
+  onChange={(e) => setSearchTerm(e.target.value)}
+  onFocus={() => setShowDropdown(suggestions.length > 0)}
+  onBlur={handleBlur} // Updated onBlur handler
+/>
               <Button variant="outline-secondary" id="button-addon2">
                 <FaSearch />
               </Button>
@@ -177,7 +193,7 @@ const SearchMain: React.FC = () => {
             )}
           </Col>
           <Col lg={6} className="map-parent-container">
-            <MapComponent filteredData={filteredData} />
+          <MapComponent filteredData={filteredData} selectedCoordinates={selectedCoordinates} />
           </Col>
         </Row>
       </Container>
