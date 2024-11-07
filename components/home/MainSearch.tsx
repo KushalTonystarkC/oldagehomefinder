@@ -102,13 +102,16 @@ const SearchMain: React.FC = () => {
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const [suggestions, setSuggestions] = useState<{ cityName: string; areaName: string }[]>([]);
   const [selectedCoordinates, setSelectedCoordinates] = useState<Coordinates | null>(null);
+  const [isDefaultView, setIsDefaultView] = useState(true);
 
   useEffect(() => {
     if (searchTerm === "") {
       setFilteredData(data.cities);
       setSuggestions([]);
       setShowDropdown(false);
+      setIsDefaultView(true);
     } else {
+      setIsDefaultView(false);
       const lowercasedFilter = searchTerm.toLowerCase();
       const filtered = data.cities.map(city => ({
         ...city,
@@ -151,6 +154,7 @@ const handleSelectSuggestion = (cityName: string, areaName: string) => {
 
   setSuggestions([]); // Clear suggestions
   setShowDropdown(false); // Close the dropdown
+  setIsDefaultView(false);
 };
   
   const handleBlur = () => {
@@ -193,7 +197,7 @@ const handleSelectSuggestion = (cityName: string, areaName: string) => {
             )}
           </Col>
           <Col lg={6} className="map-parent-container">
-          <MapComponent filteredData={filteredData} selectedCoordinates={selectedCoordinates} />
+          <MapComponent filteredData={filteredData} selectedCoordinates={selectedCoordinates} isDefaultView={isDefaultView}/>
           </Col>
         </Row>
       </Container>
