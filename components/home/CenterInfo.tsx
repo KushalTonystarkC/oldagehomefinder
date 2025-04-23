@@ -9,85 +9,71 @@ import { FaRegClipboard, FaHandHoldingHeart, FaHome, FaRegCalendar, FaUserCheck 
 
 const CenterInfoCard = () => {
     const cards = Array.from({ length: 4 }, (_, index) => (
-    <Col key={index} xs={12} sm={6} md={4} lg={3} xl={3} xxl={2}>
-        <Card style={{ width: '18rem' }}>
-            <Card.Img variant="top" width={10} src="https://images.mlssoccer.com/image/private/t_editorial_landscape_8_desktop_mobile/mls-mia/ypvaewf225tktix4yhca.png" />
-            <Card.Body className="mx-1 my-2">
-                <Container>
-                    <Row>
-                        <Col sm={12} lg={12} xs={12} md={12} xl={12} xxl={12}>
-                            <Card.Title className="text-xl">Nevada Memory Care – Northwest LV 89117</Card.Title>
-                        </Col>
-                        <Col sm={12} lg={12} xs={12} md={12} xl={12} xxl={12}>
-                            <div className="flex flex-row my-2 justify-between">
-                                <FaRegCalendar className="text-xl"/>
-                                <FaRegClipboard className="text-xl" />
-                                <FaHome className="text-xl"/>
-                                <FaHandHoldingHeart className="text-xl" />
-                                <FaUserCheck className="text-xl" />
-                            </div>
-                        </Col>
-                        <Col sm={12} lg={12} xs={12} md={12} xl={12} xxl={12} class="mx-0 px-0 my-3">
-                            <Card body>
-                                <center className="text-lg">Availability & Pricing</center>
-                                <Container className="mx-0 px-0 my-2">
-                                    <Row className="g-2">
-                                        <Col sm={6} lg={6} xs={6} md={6} xl={6} xxl={6}>
-                                            <Card>
-                                                <div className="flex flex-col justify-center align-center">
-                                                    <div className="text-center ma-0">Female Beds</div>
-                                                    <div className="text-center ma-0">3</div>
-                                                </div>
-                                            </Card>
-                                        </Col>
-                                        <Col sm={6} lg={6} xs={6} md={6} xl={6} xxl={6}>
-                                            <Card>
-                                                <div>
-                                                    <div>Male Beds</div>
-                                                    <div className="text-center">3</div>
-                                                </div>
-                                            </Card>
-                                        </Col>
-                                        <Col sm={6} lg={6} xs={6} md={6} xl={6} xxl={6}>
-                                            <Card>
-                                                <div>
-                                                    <div className="text-center">Min Price</div>
-                                                    <div className="text-center">3</div>
-                                                </div>
-                                            </Card>
-                                        </Col>
-                                        <Col sm={6} lg={6} xs={6} md={6} xl={6} xxl={6}>
-                                            <Card>
-                                                <div>
-                                                    <div className="text-center">Max Price</div>
-                                                    <div className="text-center">3</div>
-                                                </div>
-                                            </Card>
-                                        </Col>
-                                    </Row>
-                                </Container>
-                            </Card>
-                        </Col>
-                    </Row>
-                </Container>
-                <div className="flex flex-col gap-2 m-2">
-                <Col sm={12} lg={12} xs={12} md={12} xl={12} xxl={12} class="my-2">
-                    <Button variant="outline-primary" style={{ width: '100%' }}>Go somewhere</Button>
-                </Col>
-                <Col sm={12} lg={12} xs={12} md={12} xl={12} xxl={12} class="my-2">
-                    <Button variant="outline-primary" style={{ width: '100%' }}>Go somewhere</Button>
-                </Col>
+    <Col key={index} xs={12} sm={6} md={6} lg={4} xl={3} className="mb-4">
+        <Card className="h-100">
+            <Card.Img variant="top" src="https://images.mlssoccer.com/image/private/t_editorial_landscape_8_desktop_mobile/mls-mia/ypvaewf225tktix4yhca.png" />
+            <Card.Body>
+                <Card.Title className="fs-5">Nevada Memory Care – Northwest LV 89117</Card.Title>
+                <div className="d-flex justify-content-between my-3">
+                    <FaRegCalendar className="fs-5" />
+                    <FaRegClipboard className="fs-5" />
+                    <FaHome className="fs-5" />
+                    <FaHandHoldingHeart className="fs-5" />
+                    <FaUserCheck className="fs-5" />
+                </div>
+                <Card className="mb-3">
+                    <Card.Body className="p-2">
+                        <div className="text-center fw-bold mb-2">Availability & Pricing</div>
+                        <Row className="g-2">
+                            <Col xs={6}>
+                                <Card className="h-100">
+                                    <Card.Body className="p-2">
+                                        <div className="text-center">Female Beds</div>
+                                        <div className="text-center fw-bold">3</div>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                            <Col xs={6}>
+                                <Card className="h-100">
+                                    <Card.Body className="p-2">
+                                        <div className="text-center">Male Beds</div>
+                                        <div className="text-center fw-bold">3</div>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                            <Col xs={6}>
+                                <Card className="h-100">
+                                    <Card.Body className="p-2">
+                                        <div className="text-center">Min Price</div>
+                                        <div className="text-center fw-bold">3</div>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                            <Col xs={6}>
+                                <Card className="h-100">
+                                    <Card.Body className="p-2">
+                                        <div className="text-center">Max Price</div>
+                                        <div className="text-center fw-bold">3</div>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        </Row>
+                    </Card.Body>
+                </Card>
+                <div className="d-flex flex-column gap-2">
+                    <Button variant="outline-primary" className="w-100">Go somewhere</Button>
+                    <Button variant="outline-primary" className="w-100">Go somewhere</Button>
                 </div>
             </Card.Body>
         </Card>
     </Col>
-));
+    ));
     return (
-        <>
-                <Row className="m-4">
-                    {cards}
-                </Row>
-        </>
+        <Container fluid>
+            <Row className="g-4">
+                {cards}
+            </Row>
+        </Container>
     );
 }
 
