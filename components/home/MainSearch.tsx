@@ -227,67 +227,68 @@ const SearchMain: React.FC = () => {
 
   return (
     <>
-      <Container className="my-4" fluid>
-        <Row className="d-flex justify-content-between align-items-start px-4">
-          <Col lg={5} className="search-container mb-4 mb-lg-0">
-            <Image src="https://bestfitnetwork.com/wp-content/uploads/2023/12/cropped-Bestfit-Network-Logo.webp" width={200} height={50} />
-            <p className="mt-2">Your Interconnected Portal to Healthcare Communities</p>
-            <h1 className="mb-3">Search The Best Senior Care Community</h1>
-            <div className="position-relative">
-              <InputGroup className="mb-3">
-                <Form.Control
-                  ref={searchInputRef}
-                  placeholder="Enter your zip code, city or location"
-                  aria-label="Enter your zip code, city or location"
-                  aria-describedby="basic-addon2"
-                  value={searchTerm}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyDown}
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
-                />
-                <Button 
-                  variant="outline-secondary" 
-                  id="button-addon2" 
-                  onClick={handleSearch}
-                >
-                  <FaSearch />
-                </Button>
-              </InputGroup>
-              
-              {showDropdown && suggestions.length > 0 && (
-                <Dropdown.Menu show style={{ width: "100%", position: "absolute", zIndex: 1000 }}>
-                  {suggestions.map((suggestion, index) => (
-                    <Dropdown.Item 
-                      key={index} 
-                      onClick={() => handleSelectSuggestion(suggestion.cityName, suggestion.areaName)}
-                    >
-                      {suggestion.areaName}, {suggestion.cityName}
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Menu>
-              )}
-              
-              {!isDefaultView && (
-                <Button 
-                  variant="link" 
-                  className="mt-2 p-0" 
-                  onClick={clearSearch}
-                >
-                  Clear search and return to default view
-                </Button>
-              )}
-            </div>
-          </Col>
-          <Col lg={6} className="map-parent-container">
-            <MapComponent 
-              filteredData={filteredData} 
-              selectedCoordinates={selectedCoordinates} 
-              isDefaultView={isDefaultView}
-            />
-          </Col>
-        </Row>
-      </Container>
+      <div className="container mx-auto my-4 px-4">
+  <div className="flex flex-col lg:flex-row justify-between items-start">
+    <div className="w-full lg:w-5/12 mb-4 lg:mb-0">
+      <div className="flex flex-col justify-center">
+      <Image src="https://bestfitnetwork.com/wp-content/uploads/2023/12/cropped-Bestfit-Network-Logo.webp" width={200} height={50} alt="Bestfit Network Logo" />
+      <p className="mt-2">Your Interconnected Portal to Healthcare Communities</p>
+      <h1 className="mb-3">Search The Best Senior Care Community</h1>
+      </div>
+      <div className="relative">
+        <div className="flex mb-3">
+          <input
+            ref={searchInputRef}
+            className="w-full px-3 py-2 border border-gray-300 rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your zip code, city or location"
+            aria-label="Enter your zip code, city or location"
+            value={searchTerm}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+          />
+          <button 
+            className="px-4 py-2 border border-gray-300 border-l-0 rounded-r hover:bg-gray-100"
+            onClick={handleSearch}
+          >
+            <FaSearch />
+          </button>
+        </div>
+        
+        {showDropdown && suggestions.length > 0 && (
+          <div className="absolute w-full bg-white border border-gray-300 rounded shadow-lg z-10">
+            {suggestions.map((suggestion, index) => (
+              <div 
+                key={index} 
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                onClick={() => handleSelectSuggestion(suggestion.cityName, suggestion.areaName)}
+              >
+                {suggestion.areaName}, {suggestion.cityName}
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {!isDefaultView && (
+          <button 
+            className="mt-2 text-blue-500 hover:text-blue-700"
+            onClick={clearSearch}
+          >
+            Clear search and return to default view
+          </button>
+        )}
+      </div>
+    </div>
+    <div className="w-full lg:w-6/12">
+      <MapComponent 
+        filteredData={filteredData} 
+        selectedCoordinates={selectedCoordinates} 
+        isDefaultView={isDefaultView}
+      />
+    </div>
+  </div>
+</div>
     </>
   );
 }
