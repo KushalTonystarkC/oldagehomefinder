@@ -6,7 +6,7 @@ import Introduction from '@/components/home/Introduction';
 
 export default function Home() {
   return (
-    <main className='flex flex-col gap-4'>
+    <main>
       <SearchMain/>
       <Introduction />
       <ContactForm/>

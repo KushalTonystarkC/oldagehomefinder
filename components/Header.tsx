@@ -1,5 +1,6 @@
 'use client'
 import React from "react";
+import Link from "next/link";
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -25,18 +26,20 @@ const Header = () => {
     <>
       <Navbar variant="light" className="border-b border-[#e5e5e5]">
         <Container>
-          <Navbar.Brand href="#home">
+          <Navbar.Brand as={Link} href="/">
             <img src="https://bestfitnetwork.com/wp-content/uploads/2023/12/cropped-Bestfit-Network-Logo.webp" width={150} height={148} alt="Bestfit Network Logo"></img>
           </Navbar.Brand>
           <Nav className="mx-auto" defaultActiveKey={path}>
             <Nav.Link 
+              as={Link}
               href="/" 
               style={path === '/' ? activeNavLinkStyle : navLinkStyle}
               className="hover-nav-link"
             >
-              Home
+              HOME
             </Nav.Link>
             <Nav.Link 
+              as={Link}
               href="/about" 
               style={path === '/about' ? activeNavLinkStyle : navLinkStyle}
               className="hover-nav-link"
@@ -44,6 +47,7 @@ const Header = () => {
               About Us
             </Nav.Link>
             <Nav.Link 
+              as={Link}
               href="/contact" 
               style={path === '/contact' ? activeNavLinkStyle : navLinkStyle}
               className="hover-nav-link"
@@ -51,14 +55,17 @@ const Header = () => {
               Contact Us
             </Nav.Link>
           </Nav>
-          <Button variant="outline-secondary">Request Information</Button>
+          <Button variant="outline-secondary" as={Link} href="/contact">Request Information</Button>
         </Container>
       </Navbar>
 
       {/* Add custom CSS for the hover effect */}
       <style jsx global>{`
         .hover-nav-link:hover {
-          color: red !important;
+          color: var(--bs-primary) !important;
+        }
+        .navbar {
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
       `}</style>
     </>
