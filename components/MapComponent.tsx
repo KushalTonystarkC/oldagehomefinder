@@ -46,7 +46,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ filteredData, selectedCoord
     }
 
     // Get API key from environment variable or use a default
-    const apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY || 'Oa5JyryB7kK62XHg83D2';
+    const apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY || 'MAPTILER_API_KEY';
     console.log('Initializing map with API key:', apiKey ? `${apiKey.substring(0, 5)}...` : 'not set');
     maptilersdk.config.apiKey = apiKey;
 
