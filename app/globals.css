@@ -63,10 +63,5 @@ input[type="number"] {
 
 .map-container {
   height: 100%;
-  width: 400px;
-}
-
-.leaflet-container {
-  height: 100%;
   width: 100%;
 }
