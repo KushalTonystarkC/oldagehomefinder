@@ -29,6 +29,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ filteredData, selectedCoord
   const map = useRef<maptilersdk.Map | null>(null);
   const markersRef = useRef<maptilersdk.Marker[]>([]);
   const popupsRef = useRef<maptilersdk.Popup[]>([]);
+  const listenersRef = useRef<Record<string, any>>({});
   const [isMounted, setIsMounted] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
   const defaultCenter = useMemo<[number, number]>(() => [36.1699, -115.1398], []); // Default center (e.g., Nevada)
@@ -96,231 +97,215 @@ const MapComponent: React.FC<MapComponentProps> = ({ filteredData, selectedCoord
     };
   }, [defaultCenter]);
 
-  // Handle flyTo for selected coordinates and default view
-  useEffect(() => {
-    if (!map.current) return;
-
-    if (selectedCoordinates && !isDefaultView) {
-      map.current.flyTo({
-        center: [selectedCoordinates.longitude, selectedCoordinates.latitude],
-        zoom: 12,
-        duration: 1000,
-      });
-    } else if (isDefaultView) {
-      map.current.flyTo({
-        center: [defaultCenter[1], defaultCenter[0]],
-        zoom: 6,
-        duration: 1000,
-      });
-    }
-  }, [selectedCoordinates, isDefaultView, defaultCenter]);
-
-  // Update markers with clustering when filteredData or selectedCoordinates change
+  // Handle map view and markers update
   useEffect(() => {
     if (!map.current || !isMounted) return;
 
-    const addMarkersWithClustering = () => {
-      // Remove existing source and layers if they exist (this also removes event listeners)
-      if (map.current!.getSource('markers')) {
-        // Remove layers first
-        if (map.current!.getLayer('clusters')) {
-          map.current!.removeLayer('clusters');
-        }
-        if (map.current!.getLayer('cluster-count')) {
-          map.current!.removeLayer('cluster-count');
-        }
-        if (map.current!.getLayer('unclustered-point')) {
-          map.current!.removeLayer('unclustered-point');
-        }
-        // Remove source (this will clean up associated event listeners)
-        map.current!.removeSource('markers');
-      }
+    const mapInstance = map.current;
 
-      // Remove existing individual markers
-      markersRef.current.forEach(marker => marker.remove());
-      popupsRef.current.forEach(popup => popup.remove());
-      markersRef.current = [];
-      popupsRef.current = [];
+    // 1. Prepare GeoJSON data
+    const features: GeoJSON.Feature[] = [];
+    filteredData.forEach((city) => {
+      city.areas.forEach((area) => {
+        features.push({
+          type: 'Feature',
+          properties: {
+            name: area.name,
+            city: city.name,
+            id: `${city.name}-${area.name}`,
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: [area.coordinates.longitude, area.coordinates.latitude],
+          },
+        });
+      });
+    });
 
-      // Prepare GeoJSON data for clustering
-      const features: GeoJSON.Feature[] = [];
+    const geojsonData: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: features,
+    };
+
+    // 2. Update Source and Layers
+    const updateMarkers = () => {
+      const source = mapInstance.getSource('markers') as maptilersdk.GeoJSONSource;
       
-      filteredData.forEach((city) => {
-        city.areas.forEach((area) => {
-          features.push({
-            type: 'Feature',
-            properties: {
-              name: area.name,
-              city: city.name,
-              id: `${city.name}-${area.name}`,
-            },
-            geometry: {
-              type: 'Point',
-              coordinates: [area.coordinates.longitude, area.coordinates.latitude],
-            },
-          });
+      if (source) {
+        source.setData(geojsonData);
+      } else {
+        // Add GeoJSON source with clustering
+        mapInstance.addSource('markers', {
+          type: 'geojson',
+          data: geojsonData,
+          cluster: true,
+          clusterMaxZoom: 14,
+          clusterRadius: 50,
         });
-      });
 
-      // Add selected coordinates as a separate feature (not clustered)
-      if (selectedCoordinates && !isDefaultView) {
-        const selectedMarker = new maptilersdk.Marker({ color: "#ff3388" })
-          .setLngLat([selectedCoordinates.longitude, selectedCoordinates.latitude])
-          .addTo(map.current!);
-
-        const selectedPopup = new maptilersdk.Popup({ offset: 25 })
-          .setHTML(`<strong>Selected Location</strong>`);
-
-        selectedMarker.setPopup(selectedPopup);
-        markersRef.current.push(selectedMarker);
-        popupsRef.current.push(selectedPopup);
-      }
-
-      // Add GeoJSON source with clustering
-      map.current!.addSource('markers', {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: features,
-        },
-        cluster: true,
-        clusterMaxZoom: 14,
-        clusterRadius: 50,
-      });
-
-      // Add cluster circles
-      map.current!.addLayer({
-        id: 'clusters',
-        type: 'circle',
-        source: 'markers',
-        filter: ['has', 'point_count'],
-        paint: {
-          'circle-color': [
-            'step',
-            ['get', 'point_count'],
-            '#51bbd6',
-            100,
-            '#f1f075',
-            750,
-            '#f28cb1',
-          ],
-          'circle-radius': [
-            'step',
-            ['get', 'point_count'],
-            20,
-            100,
-            30,
-            750,
-            40,
-          ],
-        },
-      });
-
-      // Add cluster count labels
-      map.current!.addLayer({
-        id: 'cluster-count',
-        type: 'symbol',
-        source: 'markers',
-        filter: ['has', 'point_count'],
-        layout: {
-          'text-field': '{point_count_abbreviated}',
-          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-          'text-size': 12,
-        },
-      });
-
-      // Add unclustered points
-      map.current!.addLayer({
-        id: 'unclustered-point',
-        type: 'circle',
-        source: 'markers',
-        filter: ['!', ['has', 'point_count']],
-        paint: {
-          'circle-color': '#3388ff',
-          'circle-radius': 8,
-          'circle-stroke-width': 2,
-          'circle-stroke-color': '#fff',
-        },
-      });
-
-      // Click handler for clusters
-      const clusterClickHandler = (e: maptilersdk.MapLayerMouseEvent) => {
-        const features = map.current!.queryRenderedFeatures(e.point, {
-          layers: ['clusters'],
+        // Add cluster circles
+        mapInstance.addLayer({
+          id: 'clusters',
+          type: 'circle',
+          source: 'markers',
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': [
+              'step',
+              ['get', 'point_count'],
+              '#51bbd6',
+              10,
+              '#f1f075',
+              50,
+              '#f28cb1',
+            ],
+            'circle-radius': [
+              'step',
+              ['get', 'point_count'],
+              20,
+              10,
+              30,
+              50,
+              40,
+            ],
+            'circle-stroke-width': 1,
+            'circle-stroke-color': '#fff'
+          },
         });
-        if (features.length === 0) return;
-        
-        const clusterId = features[0].properties!.cluster_id;
-        const source = map.current!.getSource('markers') as any;
-        
-        if (source && typeof source.getClusterExpansionZoom === 'function') {
-          source.getClusterExpansionZoom(clusterId, (err: Error | null, zoom?: number) => {
+
+        // Add cluster count labels
+        mapInstance.addLayer({
+          id: 'cluster-count',
+          type: 'symbol',
+          source: 'markers',
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': '{point_count_abbreviated}',
+            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+            'text-size': 12,
+          },
+        });
+
+        // Add unclustered points
+        mapInstance.addLayer({
+          id: 'unclustered-point',
+          type: 'circle',
+          source: 'markers',
+          filter: ['!', ['has', 'point_count']],
+          paint: {
+            'circle-color': '#3388ff',
+            'circle-radius': 8,
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#fff',
+          },
+        });
+
+        // Add Event Listeners only once
+        const clusterClickHandler = (e: maptilersdk.MapLayerMouseEvent) => {
+          const features = mapInstance.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+          if (!features.length) return;
+          const clusterId = features[0].properties!.cluster_id;
+          const source = mapInstance.getSource('markers') as maptilersdk.GeoJSONSource;
+          (source as any).getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
             if (err || zoom === undefined) return;
-            map.current!.easeTo({
+            mapInstance.easeTo({
               center: (features[0].geometry as GeoJSON.Point).coordinates as [number, number],
               zoom: zoom,
             });
           });
-        }
-      };
+        };
 
-      // Click handler for individual points
-      const pointClickHandler = (e: maptilersdk.MapLayerMouseEvent) => {
-        if (!e.features || e.features.length === 0) return;
-        const coordinates = (e.features[0].geometry as GeoJSON.Point).coordinates.slice() as [number, number];
-        const properties = e.features[0].properties as any;
-        
-        new maptilersdk.Popup()
-          .setLngLat(coordinates)
-          .setHTML(`<strong>${properties.name}</strong><br />${properties.city}`)
-          .addTo(map.current!);
-      };
+        const pointClickHandler = (e: maptilersdk.MapLayerMouseEvent) => {
+          if (!e.features || e.features.length === 0) return;
+          const coordinates = (e.features[0].geometry as GeoJSON.Point).coordinates.slice() as [number, number];
+          const properties = e.features[0].properties as any;
+          new maptilersdk.Popup()
+            .setLngLat(coordinates)
+            .setHTML(`<strong>${properties.name}</strong><br />${properties.city}`)
+            .addTo(mapInstance);
+        };
 
-      // Change cursor on hover
-      const clusterMouseEnter = () => {
-        map.current!.getCanvas().style.cursor = 'pointer';
-      };
-      const clusterMouseLeave = () => {
-        map.current!.getCanvas().style.cursor = '';
-      };
-      const pointMouseEnter = () => {
-        map.current!.getCanvas().style.cursor = 'pointer';
-      };
-      const pointMouseLeave = () => {
-        map.current!.getCanvas().style.cursor = '';
-      };
+        const setCursorPointer = () => { mapInstance.getCanvas().style.cursor = 'pointer'; };
+        const setCursorDefault = () => { mapInstance.getCanvas().style.cursor = ''; };
 
-      map.current!.on('click', 'clusters', clusterClickHandler);
-      map.current!.on('click', 'unclustered-point', pointClickHandler);
-      map.current!.on('mouseenter', 'clusters', clusterMouseEnter);
-      map.current!.on('mouseleave', 'clusters', clusterMouseLeave);
-      map.current!.on('mouseenter', 'unclustered-point', pointMouseEnter);
-      map.current!.on('mouseleave', 'unclustered-point', pointMouseLeave);
-    };
+        mapInstance.on('click', 'clusters', clusterClickHandler);
+        mapInstance.on('click', 'unclustered-point', pointClickHandler);
+        mapInstance.on('mouseenter', 'clusters', setCursorPointer);
+        mapInstance.on('mouseleave', 'clusters', setCursorDefault);
+        mapInstance.on('mouseenter', 'unclustered-point', setCursorPointer);
+        mapInstance.on('mouseleave', 'unclustered-point', setCursorDefault);
 
-    // Wait for map to be fully loaded
-    if (map.current.loaded()) {
-      addMarkersWithClustering();
-    } else {
-      map.current.once('load', addMarkersWithClustering);
-    }
-
-    // Cleanup function - removing source and layers will clean up event listeners
-    return () => {
-      if (map.current && map.current.getSource('markers')) {
-        if (map.current.getLayer('clusters')) {
-          map.current.removeLayer('clusters');
-        }
-        if (map.current.getLayer('cluster-count')) {
-          map.current.removeLayer('cluster-count');
-        }
-        if (map.current.getLayer('unclustered-point')) {
-          map.current.removeLayer('unclustered-point');
-        }
-        map.current.removeSource('markers');
+        listenersRef.current = {
+          clusterClickHandler,
+          pointClickHandler,
+          setCursorPointer,
+          setCursorDefault
+        };
       }
     };
-  }, [filteredData, selectedCoordinates, isDefaultView, isMounted]);
+
+    // 3. Update Individual Markers
+    // Remove existing individual markers
+    markersRef.current.forEach(marker => marker.remove());
+    popupsRef.current.forEach(popup => popup.remove());
+    markersRef.current = [];
+    popupsRef.current = [];
+
+    if (selectedCoordinates && !isDefaultView) {
+      const selectedMarker = new maptilersdk.Marker({ color: "#ff3388" })
+        .setLngLat([selectedCoordinates.longitude, selectedCoordinates.latitude])
+        .addTo(mapInstance);
+
+      const selectedPopup = new maptilersdk.Popup({ offset: 25 })
+        .setHTML(`<strong>Selected Location</strong>`);
+
+      selectedMarker.setPopup(selectedPopup);
+      markersRef.current.push(selectedMarker);
+      popupsRef.current.push(selectedPopup);
+    }
+
+    // 4. Update View
+    const updateView = () => {
+      if (selectedCoordinates && !isDefaultView) {
+        mapInstance.flyTo({
+          center: [selectedCoordinates.longitude, selectedCoordinates.latitude],
+          zoom: 12,
+          duration: 1000,
+        });
+      } else if (isDefaultView) {
+        if (features.length > 0) {
+          const bounds = new maptilersdk.LngLatBounds();
+          features.forEach((f) => {
+            bounds.extend((f.geometry as GeoJSON.Point).coordinates as [number, number]);
+          });
+          mapInstance.fitBounds(bounds, { padding: 50, duration: 1000, maxZoom: 12 });
+        } else {
+          mapInstance.flyTo({
+            center: [defaultCenter[1], defaultCenter[0]],
+            zoom: 6,
+            duration: 1000,
+          });
+        }
+      }
+    };
+
+    // Execute updates
+    if (mapInstance.loaded()) {
+      updateMarkers();
+      updateView();
+    } else {
+      mapInstance.once('load', () => {
+        updateMarkers();
+        updateView();
+      });
+    }
+
+    return () => {
+      // Clean up markers and popups on every run if needed, but source/layers we keep
+      // If component unmounts, the primary useEffect cleanup handles map removal
+    };
+  }, [filteredData, selectedCoordinates, isDefaultView, isMounted, defaultCenter]);
+
 
   return (
     <div 

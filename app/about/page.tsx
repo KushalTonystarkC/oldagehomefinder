@@ -89,7 +89,7 @@ export default function About() {
                 Within our secure communities, residents experience a daily path of engagement 
                 designed to help them flourish, even in the presence of advanced expressions of 
                 dementia. Committed to nurturing individual needs, creating a compassionate and 
-                supportive environment celebrating each resident's journey.
+                supportive environment celebrating each resident&apos;s journey.
               </p>
             </Col>
             <Col lg={6}>

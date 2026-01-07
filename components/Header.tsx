@@ -55,7 +55,9 @@ const Header = () => {
               Contact Us
             </Nav.Link>
           </Nav>
-          <Button variant="outline-secondary" as={Link} href="/contact">Request Information</Button>
+          <Link href="/contact" passHref legacyBehavior>
+            <Button variant="outline-secondary">Request Information</Button>
+          </Link>
         </Container>
       </Navbar>
 
