@@ -78,7 +78,7 @@ const BestfitHealthcareNetwork = () => {
               </div>
               <Card.Title className="fs-3 fw-bold mb-3">Memory Care</Card.Title>
               <Card.Text>
-                Our Memory Care program is founded on a person-centered approach that preserves identity and fosters a strong sense of self. Within our secure communities, residents experience a daily path of engagement designed to help them flourish, even in the presence of advanced expressions of dementia. Committed to nurturing individual needs, creating a compassionate and supportive environment celebrating each resident's journey.
+                Our Memory Care program is founded on a person-centered approach that preserves identity and fosters a strong sense of self. Within our secure communities, residents experience a daily path of engagement designed to help them flourish, even in the presence of advanced expressions of dementia. Committed to nurturing individual needs, creating a compassionate and supportive environment celebrating each resident&apos;s journey.
               </Card.Text>
             </Card.Body>
           </Card>

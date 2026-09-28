@@ -43,39 +43,32 @@ interface City {
 interface MapComponentProps {
   filteredData: City[];
   selectedCoordinates: Coordinates | null;
+  isDefaultView: boolean;
 }
 
+const DEFAULT_CENTER: [number, number] = [36.1699, -115.1398]; // Nevada
+
 // Component to handle map center on selected coordinates
-const FlyToLocation: React.FC<{ coordinates: Coordinates | null }> = ({ coordinates }) => {
+const FlyToLocation: React.FC<{
+  coordinates: Coordinates | null;
+  isDefaultView: boolean;
+}> = ({ coordinates, isDefaultView }) => {
   const map = useMap();
   useEffect(() => {
-    if (coordinates) {
-      map.flyTo([coordinates.latitude, coordinates.longitude], 12); // Adjust zoom level if needed
+    if (coordinates && !isDefaultView) {
+      map.flyTo([coordinates.latitude, coordinates.longitude], 12);
+    } else if (isDefaultView) {
+      map.flyTo(DEFAULT_CENTER, 6);
     }
-  }, [coordinates, map]);
+  }, [coordinates, isDefaultView, map]);
 
   return null;
 };
 
 const MapComponent: React.FC<MapComponentProps> = ({ filteredData, selectedCoordinates, isDefaultView }) => {
-  const defaultCenter = [36.1699, -115.1398]; // Default center (e.g., Nevada)
-
-  const FlyToLocation: React.FC<{ coordinates: Coordinates | null }> = ({ coordinates }) => {
-    const map = useMap();
-    useEffect(() => {
-      if (coordinates && !isDefaultView) {
-        map.flyTo([coordinates.latitude, coordinates.longitude], 12);
-      } else if (isDefaultView) {
-        map.flyTo(defaultCenter, 6); // Reset to default center with zoom level 6
-      }
-    }, [coordinates, isDefaultView, map]);
-
-    return null;
-  };
-
   return (
     <MapContainer
-      center={defaultCenter}
+      center={DEFAULT_CENTER}
       zoom={6}
       scrollWheelZoom={false}
       className="map-container"
@@ -85,7 +78,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ filteredData, selectedCoord
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <FlyToLocation coordinates={selectedCoordinates} />
+      <FlyToLocation coordinates={selectedCoordinates} isDefaultView={isDefaultView} />
 
       {filteredData.map((city) =>
         city.areas.map((area) => (
