@@ -72,7 +72,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ filteredData, selectedCoord
       zoom={6}
       scrollWheelZoom={false}
       className="map-container"
-      style={{ height: "350px", width: "100%" }}
+      style={{ height: "350px", width: "100%", borderRadius: "0.75rem" }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
