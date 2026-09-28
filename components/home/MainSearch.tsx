@@ -1,9 +1,18 @@
 'use client';
 import React, { useState, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import { Container, Row, Col, InputGroup, Form, Button, Image, Dropdown } from 'react-bootstrap';
-import MapComponent from "../MapComponent";
 import { FaSearch } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
+
+const MapComponent = dynamic(() => import("../MapComponent"), {
+  ssr: false,
+  loading: () => (
+    <div style={{ height: "350px", width: "100%" }} className="bg-light d-flex align-items-center justify-content-center">
+      Loading map...
+    </div>
+  ),
+});
 
 interface Coordinates {
   latitude: number;
