@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 40" fill="none" role="img" aria-label="Bestfit Network">
+  <defs>
+    <linearGradient id="markGrad" x1="4" y1="4" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5EEAD4"/>
+      <stop offset="1" stop-color="#14B8A6"/>
+    </linearGradient>
+  </defs>
+  <!-- Mark: linked arcs suggesting care + connection -->
+  <rect x="1" y="1" width="38" height="38" rx="10" fill="url(#markGrad)" fill-opacity="0.15" stroke="#2DD4BF" stroke-opacity="0.45" stroke-width="1"/>
+  <path d="M12 26c0-7.2 5.8-13 13-13" stroke="#2DD4BF" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M15 29c0-7.2 5.8-13 13-13" stroke="#5EEAD4" stroke-width="2.4" stroke-linecap="round" opacity="0.7"/>
+  <circle cx="25" cy="13" r="2.2" fill="#2DD4BF"/>
+  <circle cx="28" cy="16" r="2.2" fill="#5EEAD4" opacity="0.85"/>
+  <!-- Wordmark -->
+  <text x="50" y="26" font-family="Inter, SF Pro Display, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="18" font-weight="700" letter-spacing="-0.4" fill="#F8FAFC">Bestfit</text>
+  <text x="122" y="26" font-family="Inter, SF Pro Display, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="18" font-weight="500" letter-spacing="-0.3" fill="#2DD4BF">Network</text>
+</svg>
